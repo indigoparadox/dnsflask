@@ -1,0 +1,14 @@
+<!doctype HTML>
+<html>
+<head>
+<title>{% block titletag %}{% endblock %}</title>
+</head>
+<body>
+<ul>
+<li><a href="/servers">Servers</a></li>
+<li><a href="/cnames">cnames</a></li>
+<li><a href="/hosts">Hosts</a></li>
+<li><a href="/interfaces">Interfaces</a></li>
+</ul>
+{% block content %}{% endblock %}
+</body>

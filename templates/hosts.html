@@ -1,0 +1,30 @@
+{% extends "page.html" %}
+{% block titletag %}DNSmasq Hosts{% endblock %}
+{% block content %}
+
+<table>
+<thead>
+<th>Hostname</th>
+<th>IP Address</th>
+<th>MAC Address</th>
+</thead>
+<tbody>
+{% for host in hosts %}
+<tr>
+<form>
+<td><input type="text" name="name" value="{{ host.name }}" /></td>
+<td><input type="text" name="ip" value="{{ host.ip }}" /></td>
+<td>
+{% for mac in host.mac %}
+<input type="text" value="{{ mac }}" />
+{% endfor %}
+</td>
+<td><input type="submit" value="Save" /></td>
+</form>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
+
