@@ -1,0 +1,26 @@
+{% extends "page.html" %}
+{% block titletag %}DNSmasq Interfaces{% endblock %}
+{% block content %}
+
+<table>
+<thead>
+<th>Enabled</th>
+<th>Interface</th>
+</thead>
+<tbody>
+{% for interface in interfaces %}
+<tr>
+<td>
+{% if interface.disabled %}
+<input type="checkbox" />
+{% else %}
+<input type="checkbox" checked="checked" />
+{% endif %}
+</td>
+<td><input type="text" name="interface" value="{{ interface.interface }}" /></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "page.html" %}
+{% block titletag %}DNSmasq cnames{% endblock %}
+{% block content %}
+
+<table>
+<thead>
+<th>Enabled</th>
+<th>Source</th>
+<th>Destination</th>
+</thead>
+<tbody>
+{% for cname in cnames %}
+<tr>
+<form action="/cnames/save" method="POST">
+<td>
+{% if cname.disabled %}
+<input type="checkbox" />
+{% else %}
+<input type="checkbox" checked="checked" />
+{% endif %}
+</td>
+<td><input type="text" name="source" value="{{ cname.source }}" /></td>
+<td><input type="text" name="dest" value="{{ cname.dest }}" /></td>
+<td><input type="submit" value="Save" />
+</form>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
+

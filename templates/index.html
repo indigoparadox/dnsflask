@@ -1,0 +1,32 @@
+{% extends "page.html" %}
+{% block titletag %}DNSmasq Configuration{% endblock %}
+{% block content %}
+<table>
+<thead>
+<th>Enabled</th>
+<th>Option</th>
+<th>Value</th>
+</thead>
+<tbody>
+{% for option in options %}
+<tr>
+<td>
+{% if option.disabled %}
+<input type="checkbox" />
+{% else %}
+<input type="checkbox" checked="checked" />
+{% endif %}
+</td>
+<td><input type="text" name="option" value="{{ option.option }}" /></td>
+<td>
+{% if option.option not in empty_options %}
+<input type="text" name="option" value="{{ option.value }}" />
+{% endif %}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
+

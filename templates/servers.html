@@ -1,0 +1,35 @@
+{% extends "page.html" %}
+{% block titletag %}DNSmasq Servers{% endblock %}
+{% block content %}
+
+<table>
+<thead>
+<th>Enabled</th>
+<th>Domain</th>
+<th>Server Address</th>
+<th>Server Port</th>
+<th>Interface</th>
+<th>Listen Port</th>
+</thead>
+<tbody>
+{% for server in servers %}
+<tr>
+<td>
+{% if server.disabled %}
+<input type="checkbox" />
+{% else %}
+<input type="checkbox" checked="checked" />
+{% endif %}
+</td>
+<td><input type="text" name="domain" value="{{ server.domain }}" /></td>
+<td><input type="text" name="address" value="{{ server.address }}" /></td>
+<td><input type="text" name="dest_port" value="{{ server.dest_port }}" /></td>
+<td><input type="text" name="interface" value="{{ server.interface }}" /></td>
+<td><input type="text" name="src_port" value="{{ server.src_port }}" /></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
+
