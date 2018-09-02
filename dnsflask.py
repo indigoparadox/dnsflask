@@ -48,8 +48,13 @@ def route_interfaces():
 @app.route( '/hosts' )
 def route_hosts():
     dns_hosts = dnshosts.read_hosts( '/root/dnsmasq/dnsmasq/hosts/hosts' )
-    dns_res = dnshosts.read_reservations( '/root/dnsmasq/dnsmasq.conf' )
-    combined = dnshosts.combine_host_reservations( dns_hosts, dns_res )
+    dns_res = dnsconfig.parse_lines( dnsconfig.RE_RESERVATION, CONFIG_PATH )
+    dns_res_multimac = []
+    for res in dns_res:
+        res['mac'] = res['mac'].split( ',' )
+        dns_res_multimac += [res]
+    combined = dnshosts.combine_host_reservations( dns_hosts, dns_res_multimac )
+    print combined
     return render_template( 'hosts.html', hosts=combined )
 
 @app.route( '/' )

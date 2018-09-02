@@ -3,7 +3,7 @@ import re
 
 DEFAULT_CONFIG_PATH='/etc/dnsmasq.conf'
 EMPTY_OPTIONS = ['expand-hosts', 'stop-dns-rebind', 'rebind-localhost-ok', 'dhcp-authoritative', 'enable-ra']
-RE_RESERVATION = re.compile( '(?P<disabled>#)dhcp-host=(?P<mac1>[0-9a-zA-Z:]*),((?P<mac2>[0-9a-zA-Z:]*),)?(?P<ip4>[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*)' )
+RE_RESERVATION = re.compile( '(?P<disabled>#)?dhcp-host=(?P<mac>[0-9a-zA-Z:,]*),(?P<ip4>[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*)' )
 RE_SERVER = re.compile( '(?P<disabled>#)?server=\\/(?P<domain>[a-zA-Z0-9.\\-_]*)\\/(?P<address>[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*)(#(?P<dest_port>[0-9]*))?(@(?P<interface>[a-zA-Z0-9.\\-_]*)(#(?P<src_port>[0-9]*))?)?' )
 RE_INTERFACE = re.compile( '(?P<disabled>#)?interface=(?P<interface>[a-zA-Z0-9]*)' )
 RE_CNAME = re.compile( '(?P<disabled>#)?cname=(?P<source>[a-zA-Z0-9.\\-_]*),(?P<dest>[a-zA-Z0-9.\\-_]*)' )
