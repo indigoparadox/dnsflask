@@ -2,6 +2,8 @@
 <html>
 <head>
 <title>{% block titletag %}{% endblock %}</title>
+<script type="text/javascript" src="{{ url_for( 'static', filename='js/jquery.min.js' ) }}"></script>
+{% block scripts %}{% endblock %}
 </head>
 <body>
 <ul>
@@ -9,6 +11,7 @@
 <li><a href="/cnames">cnames</a></li>
 <li><a href="/hosts">Hosts</a></li>
 <li><a href="/interfaces">Interfaces</a></li>
+<li><a href="/ranges">Ranges</a></li>
 </ul>
 {% block content %}{% endblock %}
 </body>
