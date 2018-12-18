@@ -1,25 +1,59 @@
 {% extends "page.html" %}
 {% block titletag %}DNSmasq Hosts{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+
+$(document).ready( function() {
+	$('.save').hide();
+	$('.field').on( 'keypress', function() {
+		$(this).parents( '.host-row' ).find( '.save' ).fadeIn();
+	} );
+} );
+
+</script>
+{% endblock %}
 {% block content %}
 
 <table>
 <thead>
+<th>Enabled</th>
 <th>Hostname</th>
 <th>IP Address</th>
 <th>MAC Address</th>
 </thead>
 <tbody>
 {% for host in hosts %}
-<tr>
-<form>
-<td><input type="text" name="name" value="{{ host.name }}" /></td>
-<td><input type="text" name="ip" value="{{ host.ip }}" /></td>
+<tr class="host-row">
+<form action="/hosts/save" method="POST">
+<td>
+{% if host.disabled %}
+<input name="enabled" id="enabled-{{ host.key }}"
+class="host-enabled" type="checkbox" />
+{% else %}
+<input name="enabled" id="enabled-{{ host.key }}"
+class="host-enabled field" type="checkbox" checked="checked"
+/>
+{% endif %}
+</td>
+<td><input 
+id="name-{{ host.key }}" name="name" class="host-name field"
+type="text" value="{{ host.name }}"
+/></td>
+<td><input
+id="ip-{{ host.key }}" name="ip" class="host-ip field"
+type="text" value="{{ host.ip }}" readonly
+/></td>
 <td>
 {% for mac in host.mac %}
-<input type="text" value="{{ mac }}" />
+<input
+id="mac-{{ host.key }}" name="mac" class="host-mac field"
+type="text" value="{{ mac }}"
+/>
 {% endfor %}
 </td>
-<td><input type="submit" value="Save" /></td>
+<td><input
+id="submit-{{ host.key }}" type="submit" value="Save" class="save"
+/></td>
 </form>
 </tr>
 {% endfor %}
