@@ -1,14 +1,16 @@
 #!/usr/bin/python
 
-from flask import Flask, render_template, request
-app = Flask( __name__ )
+import argparse
+import logging
+from flask import Flask, render_template, request, Blueprint, current_app, abort
 
 from dnsmasq import dnshosts, dnsconfig
 
-CONFIG_PATH='/root/dnsmasq/dnsmasq.conf'
 MAC_FORM_MAX=2
 
-def save_config( key, pattern, update, linewriter, path=CONFIG_PATH ):
+bp = Blueprint( 'dnsflask', __name__, template_folder='templates' )
+
+def save_config( key, pattern, update, linewriter, path ):
     # Merge updates with existing records and convert them to config lines.
     old_list = dnsconfig.parse_lines( pattern, path )
     old_list = dnsconfig.merge_update( old_list, key, update )
@@ -20,22 +22,22 @@ def save_config( key, pattern, update, linewriter, path=CONFIG_PATH ):
         lines += [line]
 
     # Load the existing config and apply the changes.
-    new_conf = dnsconfig.read_config( CONFIG_PATH, [pattern] )
+    new_conf = dnsconfig.read_config( current_app.config_path, [pattern] )
     new_conf += lines
 
     return '\n'.join( new_conf )
 
-@app.route( '/servers' )
+@bp.route( '/servers' )
 def route_servers():
-    servers = dnsconfig.parse_lines( dnsconfig.RE_SERVER, CONFIG_PATH )
+    servers = dnsconfig.parse_lines( dnsconfig.RE_SERVER, current_app.config_path )
     return render_template( 'servers.html', servers=servers )
 
-@app.route( '/cnames' )
+@bp.route( '/cnames' )
 def route_cnames():
-    cnames = dnsconfig.parse_lines( dnsconfig.RE_CNAME, CONFIG_PATH )
+    cnames = dnsconfig.parse_lines( dnsconfig.RE_CNAME, current_app.config_path )
     return render_template( 'cnames.html', cnames=cnames )
 
-@app.route( '/cnames/save', methods=['POST'] )
+@bp.route( '/cnames/save', methods=['POST'] )
 def route_cnames_save():
     # Build the edit object.
     new_cname = {}
@@ -48,16 +50,16 @@ def route_cnames_save():
         'source', dnsconfig.RE_CNAME, new_cname,
         lambda x: 'cname={},{}'.format( x['source'], x['dest'] ) )
 
-@app.route( '/interfaces' )
+@bp.route( '/interfaces' )
 def route_interfaces():
-    interfaces = dnsconfig.parse_lines( dnsconfig.RE_INTERFACE, CONFIG_PATH )
+    interfaces = dnsconfig.parse_lines( dnsconfig.RE_INTERFACE, current_app.config_path )
     return render_template( 'interfaces.html', interfaces=interfaces )
 
-@app.route( '/hosts' )
+@bp.route( '/hosts' )
 def route_hosts():
     dns_hosts = dnshosts.read_hosts( '/root/dnsmasq/dnsmasq/hosts/hosts' )
     dns_res = dnsconfig.parse_lines(
-        dnsconfig.RE_RESERVATION, path=CONFIG_PATH, key='ip' )
+        dnsconfig.RE_RESERVATION, path=current_app.config_path, key='ip' )
     dns_res_multimac = []
     
     # Add missing hosts to res list so MAC field gets filled out below.
@@ -75,7 +77,7 @@ def route_hosts():
     combined = dnshosts.combine_host_reservations( dns_hosts, dns_res_multimac )
     return render_template( 'hosts.html', hosts=combined )
 
-@app.route( '/hosts/save', methods=['POST'] )
+@bp.route( '/hosts/save', methods=['POST'] )
 def route_hosts_save():
     for key, item in request.form.iteritems():
         print key
@@ -94,12 +96,45 @@ def route_hosts_save():
             ','.join( x['mac'] ) if type( x['mac'] ) == list else x['mac'],
             x['ip'] ) )
 
-@app.route( '/' )
+@bp.route( '/' )
 def route_root():
-    options = dnsconfig.parse_lines( dnsconfig.RE_OPTIONS, CONFIG_PATH )
-    return render_template(
-        'index.html', options=options, empty_options=dnsconfig.EMPTY_OPTIONS )
+    logger = logging.getLogger( 'route.root' )
+    logger.info( 'Request: /, Config: {}'.format( current_app.config_path ) )
+    try:
+        options = dnsconfig.parse_lines( 
+            dnsconfig.RE_OPTIONS, current_app.config_path )
+        return render_template(
+            'index.html', options=options,
+            empty_options=dnsconfig.EMPTY_OPTIONS )
+    except IOError as e:
+        logger.error( e )
+        abort( 404 )
+
+def create_flask( config_path ):
+    global bp
+    app = Flask( __name__ )
+    app.config_path = config_path
+    app.register_blueprint( bp )
+    return app
 
 if '__main__' == __name__:
-	app.run( host='192.168.110.6' )
+
+    logging.basicConfig()
+
+    cli = argparse.ArgumentParser()
+
+    cli.add_argument( '-c', '--config', action='store',
+        default='/etc/dnsmasq.conf',
+        help='Path to config file from which to get initial settings.' )
+
+    cli.add_argument( 'hostname', action='store', default='127.0.0.1',
+        help='Hostname or IP on which to listen.' )
+
+    #cli.add_argument( 'port', action='store', default=5000,
+    #    help='Hostname or IP on which to listen.' )
+
+    args = cli.parse_args()
+
+    app = create_flask( args.config )
+    app.run( host=args.hostname )
 
