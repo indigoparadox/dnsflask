@@ -12,52 +12,54 @@ $(document).ready( function() {
 
 </script>
 {% endblock %}
+{% macro row_host( key, name, ip, macs, disabled ) %}
+ <form action="/hosts/save" method="POST" class="t-row">
+  <div class="t-cell">
+   <input name="enabled" class="host-enabled field" type="checkbox" {% 
+    if not disabled %}checked="checked"{% endif %}
+    id="host-enabled-{{ key }}"/>
+  </div>
+  <div class="t-cell">
+   <input 
+    id="host-name-{{ key }}" name="name" class="host-name field"
+    type="text" value="{{ name }}" />
+  </div>
+  <div class="t-cell">
+   <input
+    id="host-ip-{{ key }}" name="ip" class="host-ip field"
+    type="text" value="{{ ip }}" readonly
+    />
+  </div>
+  <div class="t-cell">
+{% for mac in macs %}
+   <input
+    name="mac" class="host-mac field"
+    type="text" value="{{ mac }}"
+   />
+{% endfor %}
+   <input
+    name="mac" class="host-mac field"
+    type="text" value="{{ mac }}"
+   />
+  </div>
+  <div class="t-cell">
+   <input id="host-save-{{ key }}" type="submit" name="action" value="Save" class="save" />
+  </div>
+ </form>
+{% endmacro %}
 {% block content %}
 
-<table>
-<thead>
-<th>Enabled</th>
-<th>Hostname</th>
-<th>IP Address</th>
-<th>MAC Address</th>
-</thead>
-<tbody>
+<div class="t-table">
+ <div class="t-row-head">
+  <div class="t-cell-head">Enabled</div>
+  <div class="t-cell-head">Hostname</div>
+  <div class="t-cell-head">IP Address</div>
+  <div class="t-cell-head">MAC Address</div>
+ </div>
 {% for host in hosts %}
-<tr class="host-row">
-<form action="/hosts/save" method="POST">
-<td>
-{% if host.disabled %}
-<input name="enabled" id="enabled-{{ host.key }}"
-class="host-enabled" type="checkbox" />
-{% else %}
-<input name="enabled" id="enabled-{{ host.key }}"
-class="host-enabled field" type="checkbox" checked="checked"
-/>
-{% endif %}
-</td>
-<td><input 
-id="name-{{ host.key }}" name="name" class="host-name field"
-type="text" value="{{ host.name }}"
-/></td>
-<td><input
-id="ip-{{ host.key }}" name="ip" class="host-ip field"
-type="text" value="{{ host.ip }}" readonly
-/></td>
-<td>
-{% for mac in host.mac %}
-<input
-id="mac-{{ host.key }}" name="mac" class="host-mac field"
-type="text" value="{{ mac }}"
-/>
+{{ row_host( host.key, host.name, host.ip, host.mac, host.disabled ) }}
 {% endfor %}
-</td>
-<td><input
-id="submit-{{ host.key }}" type="submit" value="Save" class="save"
-/></td>
-</form>
-</tr>
-{% endfor %}
-</tbody>
+{{ row_host( 'new', '', '', [], true ) }}
 </table>
 
 {% endblock %}

@@ -1,0 +1,42 @@
+
+body {
+   font-family: Arial, Helvetica, sans-serif;
+   margin: 0;
+}
+
+#navi {
+   text-align: center;
+}
+
+#navi li {
+   display: inline;
+   padding: 0.75em;
+}
+
+#navi li.active {
+   font-weight: bold;
+}
+
+.t-table {
+   display: table;
+   margin: 1em auto;
+}
+
+.t-row-head {
+
+}
+
+.t-row, .t-row-head {
+   display: table-row;
+}
+
+.t-cell-head {
+   font-weight: bold;
+   text-align: center;
+}
+
+.t-cell, .t-cell-head {
+   display: table-cell;
+   padding: 0.25em;
+}
+

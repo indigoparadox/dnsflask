@@ -2,16 +2,22 @@
 <html>
 <head>
 <title>{% block titletag %}{% endblock %}</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/style.css' ) }}" />
 <script type="text/javascript" src="{{ url_for( 'static', filename='js/jquery.min.js' ) }}"></script>
 {% block scripts %}{% endblock %}
 </head>
 <body>
-<ul>
-<li><a href="/servers">Servers</a></li>
-<li><a href="/cnames">cnames</a></li>
-<li><a href="/hosts">Hosts</a></li>
-<li><a href="/interfaces">Interfaces</a></li>
-<li><a href="/ranges">Ranges</a></li>
+<ul id="navi">
+<li class="{% if request.path == '/servers'
+ %}active{% endif %}"><a href="/servers">Servers</a></li>
+<li class="{% if request.path == '/cnames'
+ %}active{% endif %}"><a href="/cnames">cnames</a></li>
+<li class="{% if request.path == '/hosts'
+ %}active{% endif %}"><a href="/hosts">Hosts</a></li>
+<li class="{% if request.path == '/interfaces'
+ %}active{% endif %}"><a href="/interfaces">Interfaces</a></li>
+<li class="{% if request.path == '/ranges'
+ %}active{% endif %}"><a href="/ranges">Ranges</a></li>
 </ul>
 {% block content %}{% endblock %}
 </body>
