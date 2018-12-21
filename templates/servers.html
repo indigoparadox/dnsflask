@@ -1,35 +1,53 @@
 {% extends "page.html" %}
 {% block titletag %}DNSmasq Servers{% endblock %}
+{% macro row_server( key, domain, address, dest_port, interface, src_port, disabled, class ) %}
+ <form action="/servers/save" method="post" class="t-row {{ class }}">
+  <div class="t-cell">
+   <input type="checkbox" name="enabled" id="server-enabled-{{ key }}" 
+    class="server-enabled field" {%
+    if not disabled %}checked="checked"{% endif %} />
+  </div>
+  <div class="t-cell">
+   <input type="text" name="domain" value="{{ domain }}"
+    class="server-domain field" id="server-domain-{{ key }}" />
+  </div>
+  <div class="t-cell">
+   <input type="text" name="address" value="{{ address }}"
+    class="server-address field" id="server-address-{{ key }}" />
+  </div>
+  <div class="t-cell">
+   <input type="text" name="dest_port" value="{{ dest_port }}"
+    class="server-dest-port field" id="server-dest-port-{{ key }}" />
+  </div>
+  <div class="t-cell">
+   <input type="text" name="interface" value="{{ interface }}"
+    class="server-interface field" id="server-interface-{{ key }}" />
+  </div>
+  <div class="t-cell">
+   <input type="text" name="src_port" value="{{ src_port }}"
+    class="server-src-port field" id="server-src-port-{{ key }}" />
+  </div>
+  <div class="t-cell submit">
+   <input type="submit" name="action" value="Save" />
+   <input type="submit" name="action" value="Delete" />
+  </div>
+ </form>
+{% endmacro %}
 {% block content %}
 
-<table>
-<thead>
-<th>Enabled</th>
-<th>Domain</th>
-<th>Server Address</th>
-<th>Server Port</th>
-<th>Interface</th>
-<th>Listen Port</th>
-</thead>
-<tbody>
+<div class="t-table">
+ <div class="t-row-head">
+  <div class="t-cell-head">Enabled</div>
+  <div class="t-cell-head">Domain</div>
+  <div class="t-cell-head">Server Address</div>
+  <div class="t-cell-head">Server Port</div>
+  <div class="t-cell-head">Interface</div>
+  <div class="t-cell-head">Listen Port</div>
+ </div>
 {% for server in servers %}
-<tr>
-<td>
-{% if server.disabled %}
-<input type="checkbox" />
-{% else %}
-<input type="checkbox" checked="checked" />
-{% endif %}
-</td>
-<td><input type="text" name="domain" value="{{ server.domain }}" /></td>
-<td><input type="text" name="address" value="{{ server.address }}" /></td>
-<td><input type="text" name="dest_port" value="{{ server.dest_port }}" /></td>
-<td><input type="text" name="interface" value="{{ server.interface }}" /></td>
-<td><input type="text" name="src_port" value="{{ server.src_port }}" /></td>
-</tr>
+{{ row_server( server.domain, server.domain, server.address, server.dest_port, server.interface, server.src_port, server.disabled, '' ) }}
 {% endfor %}
-</tbody>
-</table>
-
+{{ row_server( 'new', '', '', '', '', '', true, 'new' ) }}
+</div>
 {% endblock %}
 
