@@ -4,16 +4,16 @@
 <script type="text/javascript">
 
 $(document).ready( function() {
-	$('.save').hide();
+	/* $('.save').hide();
 	$('.field').on( 'keypress', function() {
 		$(this).parents( '.host-row' ).find( '.save' ).fadeIn();
-	} );
+	} ); */
 } );
 
 </script>
 {% endblock %}
-{% macro row_host( key, name, ip, macs, disabled ) %}
- <form action="/hosts/save" method="POST" class="t-row">
+{% macro row_host( key, name, ip, macs, disabled, class ) %}
+ <form action="/hosts/save" method="POST" class="t-row {{ class }}">
   <div class="t-cell">
    <input name="enabled" class="host-enabled field" type="checkbox" {% 
     if not disabled %}checked="checked"{% endif %}
@@ -27,7 +27,7 @@ $(document).ready( function() {
   <div class="t-cell">
    <input
     id="host-ip-{{ key }}" name="ip" class="host-ip field"
-    type="text" value="{{ ip }}" readonly
+    type="text" value="{{ ip }}" {% if class != 'new' %}readonly{% endif %}
     />
   </div>
   <div class="t-cell">
@@ -35,15 +35,18 @@ $(document).ready( function() {
    <input
     name="mac" class="host-mac field"
     type="text" value="{{ mac }}"
-   />
+    />
 {% endfor %}
    <input
     name="mac" class="host-mac field"
     type="text" value="{{ mac }}"
-   />
+    />
   </div>
   <div class="t-cell">
-   <input id="host-save-{{ key }}" type="submit" name="action" value="Save" class="save" />
+   <input id="host-save-{{ key }}" type="submit" name="action"
+    value="Save" class="save" />
+   <input id="host-delete-{{ key }}" type="submit" name="action"
+    value="Delete" class="delete" />
   </div>
  </form>
 {% endmacro %}
@@ -57,9 +60,9 @@ $(document).ready( function() {
   <div class="t-cell-head">MAC Address</div>
  </div>
 {% for host in hosts %}
-{{ row_host( host.key, host.name, host.ip, host.mac, host.disabled ) }}
+{{ row_host( host.key, host.name, host.ip, host.mac, host.disabled, '' ) }}
 {% endfor %}
-{{ row_host( 'new', '', '', [], true ) }}
+{{ row_host( 'new', '', '', [], true, 'new' ) }}
 </table>
 
 {% endblock %}
