@@ -71,6 +71,21 @@ def route_servers():
         logger.error( e )
     return render_template( 'servers.html', servers=servers )
 
+@bp.route( '/servers/save', methods=['POST'] )
+def route_servers_save():
+    logger = logging.getLogger( 'route.servers.save' )
+
+    new_server = rest_object( ['domain', 'address', 'dest_port', 'interface', 'src_port'] )
+    logger.info( 'Saving config item: {}'.format( new_server ) )
+    save_config(
+        'domain', dnsconfig.RE_SERVER, new_server,
+        lambda x: 'server={}/{}#{}@{}#{}'.format(
+            x['domain'], x['address'], x['dest_port'], x['interface'],
+            x['src_port'] ),
+        current_app.config_path )
+
+    return redirect( '/servers', code=302 )
+
 @bp.route( '/cnames' )
 def route_cnames():
     logger = logging.getLogger( 'route.cnames' )
