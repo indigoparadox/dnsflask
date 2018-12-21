@@ -1,7 +1,6 @@
 
 import re
 
-DEFAULT_CONFIG_PATH='/etc/dnsmasq.conf'
 EMPTY_OPTIONS = ['expand-hosts', 'stop-dns-rebind', 'rebind-localhost-ok', 'dhcp-authoritative', 'enable-ra']
 RE_RESERVATION = re.compile( '(?P<disabled>#)?dhcp-host=(?P<mac>[0-9a-zA-Z:,]*),(?P<ip>[0-9:.]*)' )
 RE_SERVER = re.compile( '(?P<disabled>#)?server=\\/(?P<domain>[a-zA-Z0-9.\\-_]*)\\/(?P<address>[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*)(#(?P<dest_port>[0-9]*))?(@(?P<interface>[a-zA-Z0-9.\\-_]*)(#(?P<src_port>[0-9]*))?)?' )
@@ -9,7 +8,7 @@ RE_INTERFACE = re.compile( '(?P<disabled>#)?interface=(?P<interface>[a-zA-Z0-9]*
 RE_CNAME = re.compile( '(?P<disabled>#)?cname=(?P<source>[a-zA-Z0-9.\\-_]*),(?P<dest>[a-zA-Z0-9.\\-_]*)' )
 RE_OPTIONS = re.compile( '(?P<disabled>#)?(?P<option>domain|resolv-file|dhcp-hostsfile|pid-file|expand-hosts|min-port|stop-dns-rebind|rebind-localhost-ok|dhcp-lease-max|dhcp-authoritative|enable-ra)(=(?P<value>.*))?' )
 
-def parse_lines( pattern, path=DEFAULT_CONFIG_PATH, key=None ):
+def parse_lines( pattern, path, key=None ):
     res_list = None
     if key:
         res_list = {}
@@ -43,7 +42,7 @@ def merge_update( list_in, key_in, update_in ):
 
     return list_out
 
-def read_config( path=DEFAULT_CONFIG_PATH, exclude=[] ):
+def read_config( path, exclude=[] ):
     new_config = []
     with open( path, 'r' ) as config_file:
         for line in config_file:

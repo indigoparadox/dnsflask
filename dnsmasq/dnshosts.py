@@ -22,7 +22,7 @@ def combine_host_reservations( hosts, reservations ):
         hosts
     )
 
-def read_hosts( path='/etc/hosts' ):
+def read_hosts( path ):
     re_host = re.compile( '(?P<ip>[0-9:.]*)\\s*(?P<name>[a-zA-Z0-9\\-_]*)' )
     hosts = []
     with open( path, 'r' ) as hosts_file:
