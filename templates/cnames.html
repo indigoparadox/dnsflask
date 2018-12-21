@@ -1,5 +1,27 @@
 {% extends "page.html" %}
 {% block titletag %}DNSmasq cnames{% endblock %}
+{% macro row_cname( key, source, dest, disabled, class ) %}
+ <form action="/cnames/save" method="POST" class="t-row {{ class }}"
+  id="row-cname-{{ key }}">
+  <div class="t-cell enabled">
+   <input type="checkbox" name="enabled" class="cname-enabled field" {% 
+    if not disabled %}checked="checked"{% endif %}
+    id="cname-enabled-{{ key }}"/>
+  </div>
+  <div class="t-cell">
+   <input type="text" name="source" value="{{ source }}"
+    class="cname-source field" id="cname-source-{{ source }}"/>
+  </div>
+  <div class="t-cell">
+   <input type="text" name="dest" value="{{ dest }}"
+    class="cname-dest field" id="cname-dest-{{ key }}"/>
+  </div>
+  <div class="t-cell">
+   <input type="submit" name="action" value="Save" />
+   <input type="submit" name="action" value="Delete" />
+  </div>
+ </form>
+{% endmacro %}
 {% block content %}
 
 <div class="t-table">
@@ -9,41 +31,8 @@
   <div class="t-cell-head">Destination</div>
  </div>
 {% for cname in cnames %}
- <form action="/cnames/save" method="POST" class="t-row"
-  id="row-cname-{{ cname.source }}">
-  <div class="t-cell enabled">
-   <input type="checkbox" name="enabled" class="cname-enabled field" {% 
-    if not cname.disabled %}checked="checked"{% endif %}
-    id="cname-enabled-{{ cname.source }}"/>
-  </div>
-  <div class="t-cell">
-   <input type="text" name="source" value="{{ cname.source }}"
-    class="cname-source field" id="cname-source-{{ cname.source }}"/>
-  </div>
-  <div class="t-cell">
-   <input type="text" name="dest" value="{{ cname.dest }}"
-    class="cname-dest field" id="cname-dest-{{ cname.source }}"/>
-  </div>
-  <div class="t-cell">
-   <input type="submit" name="action" value="Save" />
-   <input type="submit" name="action" value="Delete" />
-  </div>
- </form>
+{{ row_cname( cname.source, cname.source, cname.dest, cname.disabled, '' ) }}
 {% endfor %}
- <form action="/cnames/save" method="POST" class="t-row">
-  <div class="t-cell enabled">
-   <input type="checkbox" name="enabled" class="cname-enabled field new" />
-  </div>
-  <div class="t-cell">
-   <input type="text" name="source" class="cname-source field new" />
-  </div>
-  <div class="t-cell">
-   <input type="text" name="dest" class="cname-dest field new" />
-  </div>
-  <div class="t-cell">
-   <input type="submit" name="action" value="Save" />
-   <input type="submit" name="action" value="Delete" />
-  </div>
- </form>
+{{ row_cname( 'new', '', '', true, 'new' ) }}
 </div>
 {% endblock %}

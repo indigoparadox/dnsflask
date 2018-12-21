@@ -149,23 +149,18 @@ def route_hosts():
 
 @bp.route( '/hosts/save', methods=['POST'] )
 def route_hosts_save():
-    for key, item in request.form.iteritems():
-        print key
+    logger = logging.getLogger( 'route.hosts.save' )
 
-    # Build the edit object.
-    new_res = {}
-    new_res['ip'] = request.form.get( 'ip' )
-    new_res['name'] = request.form.get( 'name' )
-    new_res['mac'] = request.form.getlist( 'mac' )
-    if not request.form.get( 'enabled' ):
-        new_res['disabled'] = True
-
+    new_host = rest_object( ['ip','name','mac'] )
+    logger.info( 'Saving config item: {}'.format( new_host ) )
     save_config(
-        'ip', dnsconfig.RE_RESERVATION, new_res,
+        'ip', dnsconfig.RE_RESERVATION, new_host,
         lambda x: 'dhcp-host={},{}'.format(
             ','.join( x['mac'] ) if type( x['mac'] ) == list else x['mac'],
             x['ip'] ),
         current_app.config_path )
+
+    return redirect( '/hosts', code=302 )
 
 @bp.route( '/' )
 def route_root():

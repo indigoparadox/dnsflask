@@ -40,3 +40,7 @@ body {
    padding: 0.25em;
 }
 
+form.new {
+   background-color: gray;
+}
+

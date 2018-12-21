@@ -1,5 +1,25 @@
 {% extends "page.html" %}
 {% block titletag %}DNSmasq Interfaces{% endblock %}
+{% macro row_interface( key, interface, disabled, class ) %}
+ <form action="/interfaces/save" method="post" class="t-row {{ class }}"
+  id="row-interface-{{ interface.interface }}">
+  <div class="t-cell enabled">
+   <input type="checkbox" name="enabled" {%
+    if not disabled %}checked="checked"{%
+    endif %} id="if-enabled-{{ key }}" 
+    class="if-enabled field" />
+  </div>
+  <div class="t-cell interface">
+   <input type="text" id="if-interface-{{ key }}"
+    name="interface" value="{{ interface }}" 
+    class="if-interface field" />
+  </div>
+  <div class="t-cell submit">
+   <input type="submit" name="action" value="Save" />
+   <input type="submit" name="action" value="Delete" />
+  </div>
+ </form>
+{% endmacro %}
 {% block content %}
 
 <div class="t-table">
@@ -8,38 +28,8 @@
   <div class="t-cell-head">Interface</div>
  </div>
 {% for interface in interfaces %}
- <form action="/interfaces/save" method="post" class="t-row"
-  id="row-interface-{{ interface.interface }}">
-  <div class="t-cell enabled">
-   <input type="checkbox" name="enabled" {%
-    if not interface.disabled %}checked="checked"{%
-    endif %} id="if-enabled-{{ interface.interface }}" 
-    class="if-enabled field" />
-  </div>
-  <div class="t-cell interface">
-   <input type="text" id="if-interface-{{ interface.interface }}"
-    name="interface" value="{{ interface.interface }}" 
-    class="if-interface field" />
-  </div>
-  <div class="t-cell submit">
-   <input type="submit" name="action" value="Save" />
-   <input type="submit" name="action" value="Delete" />
-  </div>
- </form>
+{{ row_interface( interface.interface, interface.interface, interface.disabled, '' ) }}
 {% endfor %}
- <form action="/interfaces/save" method="post" class="t-row" id="row-new">
-  <div class="t-cell enabled">
-   <input type="checkbox" id="if-enabled-new" name="enabled"
-    class="if-enabled field new" />
-  </div>
-  <div class="t-cell interface">
-   <input type="text" id="if-interface-new" name="name"
-    class="if-interface field new" />
-  </div>
-  <div class="t-cell submit">
-   <input type="submit" name="action" value="Save" />
-   <input type="submit" name="action" value="Delete" />
-  </div>
- </form>
+{{ row_interface( 'new', '', true, 'new' ) }}
 </div>
 {% endblock %}
